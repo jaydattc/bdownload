@@ -1,0 +1,15 @@
+{
+  "name": "downloader",
+  "version": "0.0.1",
+  "main": "bdownload.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "commander": "^2.20.0",
+    "download": "^7.1.0"
+  }
+}
