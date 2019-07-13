@@ -3,6 +3,7 @@
 
 const fs = require("fs");
 const url = require("url");
+const http = require("http");
 const spawn = require("child_process").spawn;
 const meow = require("meow");
 const log = console.log;
@@ -53,7 +54,17 @@ if (cli.input.length == 0) {
   process.exit(1);
 }
 
-let digits = cli.input[0].match(/(\$+?)/g).length;
+let digits;
+if (
+  cli.flags.b &&
+  cli.input[0].match(/(\$)/g).length <= Math.ceil(Math.log10(cli.flags.b))
+)
+  digits = cli.input[0].includes("$")
+    ? cli.input[0].match(/(\$+?)/g).length
+    : 0;
+
+log(cli.input[0].match(/(\$)/g).length <= Math.ceil(Math.log10(cli.flags.b)));
+
 const getFileNumberString = index =>
   new Array(digits - index.toString().length).fill("0").join("") +
   (index + 1).toString();
@@ -63,29 +74,18 @@ if (cli.flags.b)
   fileUrls = new Array(parseInt(cli.flags.b))
     .fill("")
     .map((x, index) => cli.input[0].replace(/\$+/, getFileNumberString(index)));
-log(fileUrls);
 
 let downloadDir = cli.flags.out ? cli.flags.out : "downloads";
 
-let fileName = new Array(parseInt(cli.flags.b))
-  .fill("")
-  .map((x, i) => fileUrls[i].split("/").pop());
+let fileName = i => fileUrls[i].split("/").pop();
 
-if (cli.flags.http) {
-  for(let file in fileUrls) console.log(file)
-  // downloadFileWithHttp(file)
-} else if (cli.flags.curl) {
-  for(let file in fileUrls) console.log(file)
-  // downloadFileWithCurl(file)
-}
-
-var downloadFileWithHttp = function(fileUrl) {
+var downloadFileWithHttp = (fileUrl, index) => {
   var options = {
     host: url.parse(fileUrl).host,
     port: 80,
     path: url.parse(fileUrl).pathname
   };
-  var file = fs.createWriteStream(downloadDir + file_name);
+  var file = fs.createWriteStream(downloadDir + fileName(index));
 
   http.get(options, function(res) {
     res
@@ -94,29 +94,26 @@ var downloadFileWithHttp = function(fileUrl) {
       })
       .on("end", function() {
         file.end();
-        log(file_name + " downloaded to " + downloadDir);
+        log(
+          fileName(index) + " downloaded to " + downloadDir + " from " + fileUrl
+        );
       });
   });
 };
 
-const downloadFileWithCurl = function(file_url) {
-  const file_name = url
-    .parse(fileUrl)
-    .pathname.split("/")
-    .pop();
-
-  const file = fs.createWriteStream(downloadDir + file_name);
+const downloadFileWithCurl = (fileUrl, index) => {
+  const file = fs.createWriteStream(downloadDir + fileName(index));
 
   const curl = spawn("curl", [fileUrl]);
 
   curl.stdout.on("data", function(data) {
-    log("downloading...\t" + file_name);
+    log("downloading...\t" + fileName(index) + " from " + fileUrl);
     file.write(data);
   });
 
   curl.stdout.on("end", function(data) {
     file.end();
-    log(file_name + " downloaded to " + downloadDir);
+    log(fileName(index) + " downloaded to " + downloadDir);
   });
   curl.on("exit", function(code) {
     if (code != 0) {
@@ -124,3 +121,13 @@ const downloadFileWithCurl = function(file_url) {
     }
   });
 };
+
+if (cli.flags.http) {
+  fileUrls.forEach((file, index) => downloadFileWithHttp(file, index));
+} else if (cli.flags.curl) {
+  log(fileUrls);
+  fileUrls.forEach((file, index) => {
+    console.log(file);
+    downloadFileWithCurl(file, index);
+  });
+}
