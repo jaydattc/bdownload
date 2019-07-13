@@ -1,23 +1,103 @@
 #!/usr/bin/env node
+"use strict";
 
 const fs = require("fs");
 const url = require("url");
 const spawn = require("child_process").spawn;
-const program = require("commander");
+const meow = require("meow");
+const log = console.log;
+const { blue, red, green, yellow } = require("chalk");
 
-program
-  .option("<url>", "file url")
-  .option(
-    "-b , --batch <number_of_files>",
-    "number of files, batch download, put '$' in URI where number is supposed to be.\nfor example - \"bdowload http://download-my-file.com/my-file-$$$.jpg\" -b 12"
-  )
-  .option("-o, --out <dir>", "output directory")
-  .option("--http", "download via http protocol")
-  .option("--curl", "download via curl")
-  .parse(process.argv);
+const cli = meow(
+  `
+${green("Usage")} 
+  ${red.bold("$")} ${yellow("bdownload")} <url> 
+  ${red.bold("$")} ${yellow("bdownload")} <url> ${blue("[-o|--out]")} <dir>
+  ${red.bold("$")} ${yellow(
+    "bdownload"
+  )} <url-with-numbers-replaced-with-$> ${blue(
+    "[-b|--batch]"
+  )} <number-of-files> 
+  ${red.bold("$")} ${yellow("bdownload")} <url> ${blue("--curl")}
+${green("Options")} 
+  ${blue("-o, --out <dir>")}                   destination directory
+  ${blue(
+    "-b, --batch <number_of_files>"
+  )}     number of files, batch download, put '$' in URI where number is supposed to be. 
+  ${blue("--http")}                            download via http protocol
+  ${blue("--curl")}                            download via curl
+${green("Example")}
+  ${red.bold("$")} ${yellow("bdownload")} http://myurl.com/myfile.zip
+  ${red.bold("$")} ${yellow(
+    "bdownload"
+  )} http://notpiracysource.ru/files/my-file-$$$.mov -b 5
+  ${red.bold("$")} ${yellow(
+    "bdownload"
+  )} http://notpiracysource.ru/files/my-movies-$$$.mov -b 5 -o my-downloads/movies/
+  ${red.bold("$")} ${yellow(
+    "bdownload"
+  )} http://notpiracysource.ru/files/my-file-$$$.mov -b 5 --curl
+  `,
+  {
+    boolean: ["http", "curl"],
+    string: ["batch", "out"],
+    alias: {
+      b: "batch",
+      o: "out"
+    }
+  }
+);
 
-const fileUrl = program.number_of_files ? Array.of(program.number_of_files) : ;
-const DOWNLOAD_DIR = program.out ? program.out : '';
+if (cli.input.length == 0) {
+  log(red("No url specified..."));
+  process.exit(1);
+}
+
+let digits = cli.input[0].match(/(\$+?)/g).length;
+const getFileNumberString = index =>
+  new Array(digits - index.toString().length).fill("0").join("") +
+  (index + 1).toString();
+
+let fileUrls = cli.input;
+if (cli.flags.b)
+  fileUrls = new Array(parseInt(cli.flags.b))
+    .fill("")
+    .map((x, index) => cli.input[0].replace(/\$+/, getFileNumberString(index)));
+log(fileUrls);
+
+let downloadDir = cli.flags.out ? cli.flags.out : "downloads";
+
+let fileName = new Array(parseInt(cli.flags.b))
+  .fill("")
+  .map((x, i) => fileUrls[i].split("/").pop());
+
+if (cli.flags.http) {
+  for(let file in fileUrls) console.log(file)
+  // downloadFileWithHttp(file)
+} else if (cli.flags.curl) {
+  for(let file in fileUrls) console.log(file)
+  // downloadFileWithCurl(file)
+}
+
+var downloadFileWithHttp = function(fileUrl) {
+  var options = {
+    host: url.parse(fileUrl).host,
+    port: 80,
+    path: url.parse(fileUrl).pathname
+  };
+  var file = fs.createWriteStream(downloadDir + file_name);
+
+  http.get(options, function(res) {
+    res
+      .on("data", function(data) {
+        file.write(data);
+      })
+      .on("end", function() {
+        file.end();
+        log(file_name + " downloaded to " + downloadDir);
+      });
+  });
+};
 
 const downloadFileWithCurl = function(file_url) {
   const file_name = url
@@ -25,22 +105,22 @@ const downloadFileWithCurl = function(file_url) {
     .pathname.split("/")
     .pop();
 
-  const file = fs.createWriteStream(DOWNLOAD_DIR + file_name);
+  const file = fs.createWriteStream(downloadDir + file_name);
 
   const curl = spawn("curl", [fileUrl]);
 
   curl.stdout.on("data", function(data) {
-    console.log("downloading...\t"+file_name)
+    log("downloading...\t" + file_name);
     file.write(data);
   });
 
   curl.stdout.on("end", function(data) {
     file.end();
-    console.log(file_name + " downloaded to " + DOWNLOAD_DIR);
+    log(file_name + " downloaded to " + downloadDir);
   });
   curl.on("exit", function(code) {
     if (code != 0) {
-      console.log("Failed: " + code);
+      log("Failed: " + code);
     }
   });
 };

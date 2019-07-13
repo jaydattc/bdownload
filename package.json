@@ -1,15 +1,26 @@
 {
   "name": "downloader",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "bdownload.js",
   "scripts": {
+    "dl": "node bdownload.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "download": "bdownload.js",
+    "dl": "bdownload.js"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "files": [
+    "bdownload.js"
+  ],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "commander": "^2.20.0",
-    "download": "^7.1.0"
+    "chalk": "^2.4.2",
+    "meow": "^5.0.0"
   }
 }
