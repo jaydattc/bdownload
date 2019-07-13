@@ -20,4 +20,6 @@ Example
   $ bdownload http://notapiracysource.ru/files/my-file-$$$.mov -b 5 --curl
 ```
 
->currently use node bdownload.js \<command\> untill i figure out win and linux command-line aliases
+currently use 
+>node bdownload.js <command>
+untill i figure out win and linux command-line aliases
