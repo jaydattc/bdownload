@@ -22,4 +22,5 @@ Example
 
 currently use 
 >node bdownload.js \<command\>
+
 untill i figure out win and linux command-line aliases
