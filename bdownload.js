@@ -125,9 +125,6 @@ const downloadFileWithCurl = (fileUrl, index) => {
 if (cli.flags.http) {
   fileUrls.forEach((file, index) => downloadFileWithHttp(file, index));
 } else if (cli.flags.curl) {
-  log(fileUrls);
-  fileUrls.forEach((file, index) => {
-    console.log(file);
-    downloadFileWithCurl(file, index);
-  });
+  fileUrls.forEach((file, index) => downloadFileWithCurl(file, index));
 }
+else fileUrls.forEach((file, index) => downloadFileWithHttp(file, index));
