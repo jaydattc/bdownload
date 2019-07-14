@@ -1,16 +1,16 @@
-#bdownload
+# bdownload
 
 A batch downloader cli made in Node
 
-##Features
+## Features
 1. Download using HTTP or curl (default is curl)
 2. Batch downloading
 3. Output folder selection
 
-##Installation
+## Installation
 >npm i -g bdownload
 
-##Usage
+## Usage
 ```
 Usage
   $ dl <url>
@@ -29,5 +29,5 @@ Example
   $ dl http://notapiracysource.ru/files/my-file-$$$.mov -b 5 --curl
 ```
 
-##License
+## License
 MIT © [Jaydattsinh Champavat](https://github.com/jaydattc)
