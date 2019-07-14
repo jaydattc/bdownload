@@ -1,25 +1,33 @@
-# bdownload
+#bdownload
 
 A batch downloader cli made in Node
 
+##Features
+1. Download using HTTP or curl (default is curl)
+2. Batch downloading
+3. Output folder selection
+
+##Installation
+>npm i -g bdownload
+
+##Usage
 ```
 Usage
-  $ bdownload <url>
-  $ bdownload <url> [-o|--out] <dir>
-  $ bdownload <url-with-numbers-replaced-with-$> [-b|--batch] <number-of-files>
-  $ bdownload <url> --curl
+  $ dl <url>
+  $ dl <url> [-o|--out] <dir>
+  $ dl <url-with-numbers-replaced-with-$> [-b|--batch] <number-of-files>
+  $ dl <url> --curl
 Options
   -o, --out <dir>                   destination directory
   -b, --batch <number_of_files>     number of files, batch download, put '$' in URI where number is supposed to be.
   --http                            download via http protocol
   --curl                            download via curl
 Example
-  $ bdownload http://myurl.com/myfile.zip
-  $ bdownload http://notapiracysource.ru/files/my-file-$$$.mov -b 5
-  $ bdownload http://notapiracysource.ru/files/my-movies-$$$.mov -b 5 -o my-downloads/movies/
-  $ bdownload http://notapiracysource.ru/files/my-file-$$$.mov -b 5 --curl
+  $ dl http://myurl.com/myfile.zip
+  $ dl http://notapiracysource.ru/files/my-file-$$$.mov -b 5
+  $ dl http://notapiracysource.ru/files/my-movies-$$$.mov -b 5 -o my-downloads/movies/
+  $ dl http://notapiracysource.ru/files/my-file-$$$.mov -b 5 --curl
 ```
 
-currently use 
->node bdownload.js <command>
-untill i figure out win and linux command-line aliases
+##License
+MIT © [Jaydattsinh Champavat](https://github.com/jaydattc)

@@ -1,26 +1,42 @@
 {
-  "name": "downloader",
-  "version": "0.1.0",
-  "main": "bdownload.js",
+  "name": "bdownload",
+  "version": "0.1.2",
+  "main": "dl.js",
   "scripts": {
-    "dl": "node bdownload.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "download": "bdownload.js",
-    "dl": "bdownload.js"
+    "dl": "bin/dl"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "files": [
-    "bdownload.js"
+    "dl.js"
   ],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": {
+    "name" : "Jaydattsinh Champavat",
+    "email": "jaydattc@gmail.com",
+    "url": "https://github.com/jaydattc"
+  },
+  "license": "MIT",
+  "description": "A batch downloader cli made in Node",
   "dependencies": {
     "chalk": "^2.4.2",
     "meow": "^5.0.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaydattc/bdownload.git"
+  },
+  "keywords": [
+    "batch",
+    "downloader",
+    "cli"
+  ],
+  "bugs": {
+    "url": "https://github.com/jaydattc/bdownload/issues"
+  },
+  "homepage": "https://github.com/jaydattc/bdownload#readme"
 }

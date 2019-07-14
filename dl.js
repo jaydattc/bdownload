@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
+const fs = require("fs")
 const url = require("url");
 const http = require("http");
 const spawn = require("child_process").spawn;
 const meow = require("meow");
-const log = console.log;
+
 const { blue, red, green, yellow } = require("chalk");
+const log = console.log;
 
 const cli = meow(
   `
@@ -63,8 +64,6 @@ if (
     ? cli.input[0].match(/(\$+?)/g).length
     : 0;
 
-log(cli.input[0].match(/(\$)/g).length <= Math.ceil(Math.log10(cli.flags.b)));
-
 const getFileNumberString = index =>
   new Array(digits - index.toString().length).fill("0").join("") +
   (index + 1).toString();
@@ -75,11 +74,12 @@ if (cli.flags.b)
     .fill("")
     .map((x, index) => cli.input[0].replace(/\$+/, getFileNumberString(index)));
 
-let downloadDir = cli.flags.out ? cli.flags.out : "downloads";
+let downloadDir = cli.flags.out ? cli.flags.out : "downloads/";
 
 let fileName = i => fileUrls[i].split("/").pop();
 
 var downloadFileWithHttp = (fileUrl, index) => {
+  fs.mkdirSync(downloadDir, {r: true})
   var options = {
     host: url.parse(fileUrl).host,
     port: 80,
@@ -95,13 +95,14 @@ var downloadFileWithHttp = (fileUrl, index) => {
       .on("end", function() {
         file.end();
         log(
-          fileName(index) + " downloaded to " + downloadDir + " from " + fileUrl
-        );
+          green(fileName(index)) + " downloaded to " + green(downloadDir)
+          );
       });
   });
 };
 
 const downloadFileWithCurl = (fileUrl, index) => {
+  fs.mkdirSync(downloadDir, {r: true})
   const file = fs.createWriteStream(downloadDir + fileName(index));
 
   const curl = spawn("curl", [fileUrl]);
@@ -113,11 +114,11 @@ const downloadFileWithCurl = (fileUrl, index) => {
 
   curl.stdout.on("end", function(data) {
     file.end();
-    log(fileName(index) + " downloaded to " + downloadDir);
+    log(green(fileName(index)) + " downloaded to " + green(downloadDir));
   });
   curl.on("exit", function(code) {
     if (code != 0) {
-      log("Failed: " + code);
+      log(red.bold("Failed: ") + code);
     }
   });
 };
@@ -125,9 +126,6 @@ const downloadFileWithCurl = (fileUrl, index) => {
 if (cli.flags.http) {
   fileUrls.forEach((file, index) => downloadFileWithHttp(file, index));
 } else if (cli.flags.curl) {
-  log(fileUrls);
-  fileUrls.forEach((file, index) => {
-    console.log(file);
-    downloadFileWithCurl(file, index);
-  });
+  fileUrls.forEach((file, index) => downloadFileWithCurl(file, index));
 }
+else fileUrls.forEach((file, index) => downloadFileWithCurl(file, index));
