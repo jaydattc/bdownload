@@ -78,14 +78,14 @@ let downloadDir = cli.flags.out ? cli.flags.out : "downloads/";
 
 let fileName = i => fileUrls[i].split("/").pop();
 
-var downloadFileWithHttp = (fileUrl, index) => {
+const downloadFileWithHttp = (fileUrl, index) => {
   fs.mkdirSync(downloadDir, {r: true})
-  var options = {
+  const options = {
     host: url.parse(fileUrl).host,
     port: 80,
     path: url.parse(fileUrl).pathname
   };
-  var file = fs.createWriteStream(downloadDir + fileName(index));
+  const file = fs.createWriteStream(downloadDir + fileName(index));
 
   http.get(options, function(res) {
     res
