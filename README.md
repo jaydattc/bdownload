@@ -4,7 +4,7 @@ A batch downloader cli made in NodeJS
 
 ## Features
 1. Download using HTTP or curl (default is curl)
-2. Batch downloading
+2. Batch downloading (downloading multiple files with serialized file names)
 3. Output folder selection
 
 ## Installation
